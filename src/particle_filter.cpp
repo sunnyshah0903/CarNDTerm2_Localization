@@ -96,17 +96,6 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	//   implement this method and use it as a helper during the updateWeights phase.
 
 
-	for (auto& obs : observations) {
-		double minDist = std::numeric_limits<float>::max();
-		for (const auto& pred : predicted) {
-			double distance = dist(obs.x, obs.y, pred.x, pred.y);
-			if (minDist > distance) {
-				minDist = distance;
-				obs.id = pred.id;
-			}
-		}
-	}
-
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
@@ -172,12 +161,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		// Step 3. data association
 		//std::cout << "data association" << std::endl;
 		double n_weight =1.0;
-		//vector<int> P_associations;
-		//vector<double> P_sense_x;
-    	//vector<double> P_sense_y;
-    	//P_associations.clear();
-    	//P_sense_x.clear();
-    	//P_sense_y.clear();
 		for (int j = 0 ; j< trans_observations.size() ; j++)
 		{
 			//std::cout << "looping through observations" << std::endl;
@@ -200,9 +183,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 			double mu_x = temp.x - trans_observations[j].x;
 			double mu_y = temp.y - trans_observations[j].y;
-			//std::cout << "complex weight calculation" << std::endl;
-//			double mu_x = trans_observations[j].x - temp.x;
-//			double mu_y = trans_observations[j].y - temp.y;
 
 			double gauss_norm = 1 / (2*3.1415*sig_x*sig_y);
 
@@ -212,23 +192,16 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			double eynum = pow(mu_y,2);
 			double exponent =  std::exp(-((exnum/exdeno) - (eynum/eydeno)));
 			double temp_weight = gauss_norm * exponent;
-			std::cout << "printing variables   " << temp_weight << exponent << "   " << exnum << "   " << eynum << "   " << exdeno << "   " << eydeno << std::endl;
+//			std::cout << "printing variables   " << temp_weight << exponent << "   " << exnum << "   " << eynum << "   " << exdeno << "   " << eydeno << std::endl;
 			if(temp_weight!=0)
 				n_weight *= temp_weight;
 
-        //    P_associations.push_back(trans_observations[j].id);
-        //    P_sense_x.push_back(trans_observations[j].x);
-        //    P_sense_y.push_back(trans_observations[j].y);
 		}
 
-		//std::cout << "assigning weight   " << n_weight  << std::endl;
 		particles[i].weight = n_weight;
 		weights[i] = n_weight;
-		//particles[i] = SetAssociations(particles[i], P_associations, P_sense_x, P_sense_y);
 
-		//std::cout << "done for the particle" << std::endl;
 	}
-	std::cout << "updateWeights exit" << std::endl;
 
 
 }
