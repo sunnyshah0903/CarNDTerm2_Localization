@@ -40,11 +40,11 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 			particle.x = N_x(gen);
 			particle.y = N_y(gen);
 			particle.theta = N_theta(gen);
-			particle.weight = 1.0;		
-	
+			particle.weight = 1.0;
+
 			particles.push_back(particle);
 			weights.push_back(1.0);
-		}	
+		}
 
 		is_initialized = true;
 	}
@@ -164,35 +164,24 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		for (int j = 0 ; j< trans_observations.size() ; j++)
 		{
 			//std::cout << "looping through observations" << std::endl;
-			double min_distance = 99999.0;
-			LandmarkObs temp;
+			double min_distance = 99999999.0;
+			int id = 0;
 			for (int k = 0 ; k < close_observations.size() ; k++)
 			{
 				//std::cout << "and close landmarks" << std::endl;
 				double distance = dist(trans_observations[j].x,trans_observations[j].y,close_observations[k].x,close_observations[k].y);
-				if (distance < min_distance)
-				{
-					//std::cout << "found closest" << std::endl;
-					min_distance = distance;
-					temp.x = close_observations[k].x;
-					temp.y = close_observations[k].y;
-					temp.id = close_observations[k].id;
-					trans_observations[j].id = close_observations[k].id;
-				}
+
+				if (distance < min_distance ){
+						min_distance = distance;
+						id = k;
+		                trans_observations[j].id = close_observations[id].id;
+					}
 			}
 
-			double mu_x = temp.x - trans_observations[j].x;
-			double mu_y = temp.y - trans_observations[j].y;
+			double mu_x = close_observations[id].x - trans_observations[j].x;
+			double mu_y = close_observations[id].y - trans_observations[j].y;
 
-			double gauss_norm = 1 / (2*3.1415*sig_x*sig_y);
-
-			double eydeno = 2*pow(sig_y,2);
-			double exdeno = 2*pow(sig_x,2);
-			double exnum = pow(mu_x,2);
-			double eynum = pow(mu_y,2);
-			double exponent =  std::exp(-((exnum/exdeno) - (eynum/eydeno)));
-			double temp_weight = gauss_norm * exponent;
-//			std::cout << "printing variables   " << temp_weight << exponent << "   " << exnum << "   " << eynum << "   " << exdeno << "   " << eydeno << std::endl;
+			double temp_weight = (1.0/(2.0*3.1415*sig_x*sig_y))* exp (-(((mu_x*mu_x)/(2*sig_x*sig_x)) + ((mu_y*mu_y)/(2*sig_y*sig_y))));
 			if(temp_weight!=0)
 				n_weight *= temp_weight;
 
