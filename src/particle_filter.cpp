@@ -67,7 +67,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 		if (yaw_rate == 0)
 		{
 			new_x = particles[i].x + velocity * delta_t * cos(particles[i].theta);
-			new_y = particles[i].x + velocity * delta_t * sin(particles[i].theta);
+			new_y = particles[i].y + velocity * delta_t * sin(particles[i].theta);
 			new_theta = particles[i].theta;
 			//new_theta = particles[i].theta + yaw_rate*delta_t;
 
@@ -259,4 +259,3 @@ string ParticleFilter::getSenseY(Particle best)
     s = s.substr(0, s.length()-1);  // get rid of the trailing space
     return s;
 }
-
